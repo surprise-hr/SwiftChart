@@ -11,6 +11,17 @@ import UIKit
 The `ChartSeries` class create a chart series and configure its appearance and behavior.
 */
 open class ChartSeries {
+
+    /**
+     Defines how the line will be drawn.
+     */
+    public enum LineType {
+        /// Straight line.
+        case straight
+        /// Bezier curve.
+        case curve
+    }
+
     /**
     The data used for the chart series.
     */
@@ -25,6 +36,11 @@ open class ChartSeries {
     Draws an area below the series line.
     */
     open var area: Bool = false
+
+    /**
+    The line drawing option.
+    */
+    open var lineType: LineType = .curve
 
     /**
     The series color.

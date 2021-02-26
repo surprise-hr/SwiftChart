@@ -342,10 +342,10 @@ open class Chart: UIControl {
                 let scaledYValues = scaleValuesOnYAxis( segment.map { $0.y } )
 
                 if series.line {
-                    drawLine(scaledXValues, yValues: scaledYValues, seriesIndex: index)
+                    drawLine(scaledXValues, yValues: scaledYValues, seriesIndex: index, type: series.lineType)
                 }
                 if series.area {
-                    drawArea(scaledXValues, yValues: scaledYValues, seriesIndex: index)
+                    drawArea(scaledXValues, yValues: scaledYValues, seriesIndex: index, type: series.lineType)
                 }
             })
         }
@@ -461,14 +461,24 @@ open class Chart: UIControl {
 
     // MARK: - Drawings
 
-    fileprivate func drawLine(_ xValues: [Double], yValues: [Double], seriesIndex: Int) {
+    fileprivate func drawLine(_ xValues: [Double], yValues: [Double], seriesIndex: Int, type: ChartSeries.LineType) {
         // YValues are "reverted" from top to bottom, so 'above' means <= level
         let isAboveZeroLine = yValues.max()! <= self.scaleValueOnYAxis(series[seriesIndex].colors.zeroLevel)
         let path = CGMutablePath()
         path.move(to: CGPoint(x: CGFloat(xValues.first!), y: CGFloat(yValues.first!)))
         for i in 1..<yValues.count {
-            let y = yValues[i]
-            path.addLine(to: CGPoint(x: CGFloat(xValues[i]), y: CGFloat(y)))
+            switch type {
+            case .straight:
+                path.addLine(to: CGPoint(x: CGFloat(xValues[i]), y: CGFloat(yValues[i])))
+
+            case .curve:
+                let prevPoint = CGPoint(x: CGFloat(xValues[i - 1]), y: CGFloat(yValues[i - 1]))
+                let currPoint = CGPoint(x: CGFloat(xValues[i]), y: CGFloat(yValues[i]))
+                let xOffest = (currPoint.x - prevPoint.x) / 2
+                let cp1 = CGPoint(x: prevPoint.x + xOffest, y: prevPoint.y)
+                let cp2 = CGPoint(x: currPoint.x - xOffest, y: currPoint.y)
+                path.addCurve(to: currPoint, control1: cp1, control2: cp2)
+            }
         }
 
         let lineLayer = CAShapeLayer()
@@ -489,7 +499,7 @@ open class Chart: UIControl {
         layerStore.append(lineLayer)
     }
 
-    fileprivate func drawArea(_ xValues: [Double], yValues: [Double], seriesIndex: Int) {
+    fileprivate func drawArea(_ xValues: [Double], yValues: [Double], seriesIndex: Int, type: ChartSeries.LineType) {
         // YValues are "reverted" from top to bottom, so 'above' means <= level
         let isAboveZeroLine = yValues.max()! <= self.scaleValueOnYAxis(series[seriesIndex].colors.zeroLevel)
         let area = CGMutablePath()
@@ -497,7 +507,22 @@ open class Chart: UIControl {
 
         area.move(to: CGPoint(x: CGFloat(xValues[0]), y: zero))
         for i in 0..<xValues.count {
-            area.addLine(to: CGPoint(x: CGFloat(xValues[i]), y: CGFloat(yValues[i])))
+            switch type {
+            case .straight:
+                area.addLine(to: CGPoint(x: CGFloat(xValues[i]), y: CGFloat(yValues[i])))
+
+            case .curve:
+                guard i > 0 else {
+                    area.addLine(to: CGPoint(x: CGFloat(xValues[i]), y: CGFloat(yValues[i])))
+                    break
+                }
+                let prevPoint = CGPoint(x: CGFloat(xValues[i - 1]), y: CGFloat(yValues[i - 1]))
+                let currPoint = CGPoint(x: CGFloat(xValues[i]), y: CGFloat(yValues[i]))
+                let xOffest = (currPoint.x - prevPoint.x) / 2
+                let cp1 = CGPoint(x: prevPoint.x + xOffest, y: prevPoint.y)
+                let cp2 = CGPoint(x: currPoint.x - xOffest, y: currPoint.y)
+                area.addCurve(to: currPoint, control1: cp1, control2: cp2)
+            }
         }
         area.addLine(to: CGPoint(x: CGFloat(xValues.last!), y: zero))
         let areaLayer = CAShapeLayer()
