@@ -140,6 +140,15 @@ open class Chart: UIControl {
     */
     @IBInspectable
     open var gridColor: UIColor = UIColor.gray.withAlphaComponent(0.3)
+
+    /**
+    Color for the overlay.
+    */
+    @IBInspectable
+    open var overlayColor: UIColor = .gray
+
+    public var maskLayer = CALayer()
+
     /**
     Enable the lines for the labels on the x-axis
     */
@@ -328,6 +337,7 @@ open class Chart: UIControl {
         for layer in layerStore {
             layer.removeFromSuperlayer()
         }
+        maskLayer.removeFromSuperlayer()
         layerStore.removeAll()
 
         // Draw content
@@ -494,6 +504,16 @@ open class Chart: UIControl {
         lineLayer.lineWidth = lineWidth
         lineLayer.lineJoin = CAShapeLayerLineJoin.bevel
 
+        if layerStore.count == 6 && maskLayer.superlayer == nil {
+            var rect = self.bounds
+            rect.size.width /= 2
+            rect.origin.x += rect.size.width
+
+            maskLayer.frame = rect
+            // Actual color doesn't matter it's used only to create opaque area that will be masked.
+            maskLayer.backgroundColor = UIColor.black.cgColor
+            lineLayer.mask = maskLayer
+        }
         self.layer.addSublayer(lineLayer)
 
         layerStore.append(lineLayer)

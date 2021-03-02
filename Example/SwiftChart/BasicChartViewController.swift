@@ -47,19 +47,28 @@ class BasicChartViewController: UIViewController, ChartDelegate {
             
             // Example with multiple series, the first two with area enabled
             
-            let series1 = ChartSeries([0, 6, 2, 8, 4, 7, 3, 10, 8])
-            series1.color = ChartColors.yellowColor()
-            series1.area = true
+            let series1 = ChartSeries([0, 6, 2, 7, 3, 10])
+            series1.color = #colorLiteral(red: 1, green: 0.8784313725, blue: 0.8980392157, alpha: 1)
+
+            let series2 = ChartSeries([1, 0, 3, 5, 6, 8])
+            series2.color = #colorLiteral(red: 1, green: 0.9647058824, blue: 0.8666666667, alpha: 1)
+
+            let series3 = ChartSeries([5, 8, 7, 6, 9, 10])
+            series3.color = #colorLiteral(red: 1, green: 0.8980392157, blue: 0.9607843137, alpha: 1)
+
+            let series4 = ChartSeries([4, 2, 5, 8, 7, 8])
+            series4.color = #colorLiteral(red: 0.9921568627, green: 0.9176470588, blue: 0.8509803922, alpha: 1)
+
+            let series5 = ChartSeries([3, 6, 2, 7, 9, 9])
+            series5.color = #colorLiteral(red: 0.937254902, green: 0.8901960784, blue: 0.9803921569, alpha: 1)
+
+            let series6 = ChartSeries([2, 5, 4, 7, 5, 10])
+            series6.color = #colorLiteral(red: 0.07843137255, green: 0.4901960784, blue: 0.9803921569, alpha: 1)
+
+            let series7 = ChartSeries([2, 5, 4, 7, 5, 10])
+            series7.color = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
             
-            let series2 = ChartSeries([1, 0, 0.5, 0.2, 0, 1, 0.8, 0.3, 1])
-            series2.color = ChartColors.redColor()
-            series2.area = true
-            
-            // A partially filled series
-            let series3 = ChartSeries([9, 8, 10, 8.5, 9.5, 10])
-            series3.color = ChartColors.purpleColor()
-            
-            chart.add([series1, series2, series3])
+            chart.add([series1, series2, series3, series4, series5, series6, series7])
             
         case 2:
             
@@ -92,24 +101,32 @@ class BasicChartViewController: UIViewController, ChartDelegate {
         default: break;
             
         }
+
+        chart.lineWidth = 5
+        chart.showXLabelsAndGrid = false
+        chart.showYLabelsAndGrid = false
     }
     
     // Chart delegate
     
     func didTouchChart(_ chart: Chart, indexes: Array<Int?>, x: Double, left: CGFloat) {
-        for (seriesIndex, dataIndex) in indexes.enumerated() {
-            if let value = chart.valueForSeries(seriesIndex, atIndex: dataIndex) {
-                print("Touched series: \(seriesIndex): data index: \(dataIndex!); series value: \(value); x-axis value: \(x) (from left: \(left))")
-            }
-        }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        var rect = chart.maskLayer.frame
+        rect.size.width = chart.frame.width - left
+        rect.origin.x = left
+        chart.maskLayer.frame = rect
+
+        CATransaction.commit()
     }
     
     func didFinishTouchingChart(_ chart: Chart) {
-        
+
     }
     
     func didEndTouchingChart(_ chart: Chart) {
-        
+
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
