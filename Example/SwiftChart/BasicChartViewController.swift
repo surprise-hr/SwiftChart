@@ -65,10 +65,11 @@ class BasicChartViewController: UIViewController, ChartDelegate {
             let series6 = ChartSeries([2, 5, 4, 7, 5, 10])
             series6.color = #colorLiteral(red: 0.07843137255, green: 0.4901960784, blue: 0.9803921569, alpha: 1)
 
-            let series7 = ChartSeries([2, 5, 4, 7, 5, 10])
-            series7.color = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-            
-            chart.add([series1, series2, series3, series4, series5, series6, series7])
+            chart.add([series1, series2, series3, series4, series5, series6])
+
+            chart.highlightMaskColor = #colorLiteral(red: 0.8784313725, green: 0.8784313725, blue: 0.8784313725, alpha: 1)
+            chart.highlightedChartIndex = 5
+            chart.hideHighlightOnTouchEnd = true
             
         case 2:
             
@@ -110,15 +111,7 @@ class BasicChartViewController: UIViewController, ChartDelegate {
     // Chart delegate
     
     func didTouchChart(_ chart: Chart, indexes: Array<Int?>, x: Double, left: CGFloat) {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
 
-        var rect = chart.maskLayer.frame
-        rect.size.width = chart.frame.width - left
-        rect.origin.x = left
-        chart.maskLayer.frame = rect
-
-        CATransaction.commit()
     }
     
     func didFinishTouchingChart(_ chart: Chart) {

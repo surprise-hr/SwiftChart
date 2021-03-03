@@ -65,11 +65,11 @@ open class Chart: UIControl {
     Series to display in the chart.
     */
     open var series: [ChartSeries] = [] {
-      didSet {
-        DispatchQueue.main.async {
-          self.setNeedsDisplay()
+        didSet {
+            DispatchQueue.main.async {
+                self.setNeedsDisplay()
+            }
         }
-      }
     }
 
     /**
@@ -142,14 +142,6 @@ open class Chart: UIControl {
     open var gridColor: UIColor = UIColor.gray.withAlphaComponent(0.3)
 
     /**
-    Color for the overlay.
-    */
-    @IBInspectable
-    open var overlayColor: UIColor = .gray
-
-    public var maskLayer = CALayer()
-
-    /**
     Enable the lines for the labels on the x-axis
     */
     open var showXLabelsAndGrid: Bool = true
@@ -200,6 +192,31 @@ open class Chart: UIControl {
     open var maxY: Double?
 
     /**
+    Color for the highlight mask.
+    */
+    open var highlightMaskColor = UIColor.gray {
+        didSet {
+            highlightBackLayer?.backgroundColor = highlightMaskColor.cgColor
+        }
+    }
+
+    /**
+     Index of the chart that should be masked to the highlighting line.
+     If set to `nil` no chart will be masked.
+     */
+    open var highlightedChartIndex: Int? {
+        didSet {
+            if let index = highlightedChartIndex, index >= series.count {
+                highlightedChartIndex = oldValue
+                return
+            }
+            DispatchQueue.main.async {
+                self.setNeedsDisplay()
+            }
+        }
+    }
+
+    /**
     Color for the highlight line.
     */
     open var highlightLineColor = UIColor.gray
@@ -210,9 +227,9 @@ open class Chart: UIControl {
     open var highlightLineWidth: CGFloat = 0.5
 
     /**
-    Hide the highlight line when touch event ends, e.g. when stop swiping over the chart
+    Hide the highlight line along with the masked chart when touch event ends, e.g. when stop swiping over the chart
     */
-    open var hideHighlightLineOnTouchEnd = false
+    open var hideHighlightOnTouchEnd = false
 
     /**
     Alpha component for the area color.
@@ -220,6 +237,9 @@ open class Chart: UIControl {
     open var areaAlphaComponent: CGFloat = 0.1
 
     // MARK: Private variables
+
+    fileprivate var highlightMaskLayer: CALayer?
+    fileprivate var highlightBackLayer: CAShapeLayer?
 
     fileprivate var highlightShapeLayer: CAShapeLayer!
     fileprivate var layerStore: [CAShapeLayer] = []
@@ -337,7 +357,6 @@ open class Chart: UIControl {
         for layer in layerStore {
             layer.removeFromSuperlayer()
         }
-        maskLayer.removeFromSuperlayer()
         layerStore.removeAll()
 
         // Draw content
@@ -360,6 +379,7 @@ open class Chart: UIControl {
             })
         }
 
+        drawHighlightingMaskIfNeeded()
         drawAxes()
 
         if showXLabelsAndGrid && (xLabels != nil || series.count > 0) {
@@ -491,29 +511,8 @@ open class Chart: UIControl {
             }
         }
 
-        let lineLayer = CAShapeLayer()
-        lineLayer.frame = self.bounds
-        lineLayer.path = path
+        let lineLayer = makeLineLayer(with: path, color: isAboveZeroLine ? series[seriesIndex].colors.above : series[seriesIndex].colors.below)
 
-        if isAboveZeroLine {
-            lineLayer.strokeColor = series[seriesIndex].colors.above.cgColor
-        } else {
-            lineLayer.strokeColor = series[seriesIndex].colors.below.cgColor
-        }
-        lineLayer.fillColor = nil
-        lineLayer.lineWidth = lineWidth
-        lineLayer.lineJoin = CAShapeLayerLineJoin.bevel
-
-        if layerStore.count == 6 && maskLayer.superlayer == nil {
-            var rect = self.bounds
-            rect.size.width /= 2
-            rect.origin.x += rect.size.width
-
-            maskLayer.frame = rect
-            // Actual color doesn't matter it's used only to create opaque area that will be masked.
-            maskLayer.backgroundColor = UIColor.black.cgColor
-            lineLayer.mask = maskLayer
-        }
         self.layer.addSublayer(lineLayer)
 
         layerStore.append(lineLayer)
@@ -559,6 +558,27 @@ open class Chart: UIControl {
         self.layer.addSublayer(areaLayer)
 
         layerStore.append(areaLayer)
+    }
+
+    fileprivate func drawHighlightingMaskIfNeeded() {
+        removeHighlightingMask()
+
+        guard let index = highlightedChartIndex else { return }
+
+        highlightMaskLayer = CALayer()
+        // Actual color doesn't matter it's used only to create opaque area that will be masked.
+        highlightMaskLayer!.backgroundColor = UIColor.black.cgColor
+
+        highlightBackLayer = makeLineLayer(with: layerStore[index].path, color: highlightMaskColor)
+        highlightBackLayer!.mask = highlightMaskLayer
+
+        layer.addSublayer(highlightBackLayer!)
+    }
+
+    fileprivate func removeHighlightingMask() {
+        highlightBackLayer?.removeFromSuperlayer()
+        highlightBackLayer = nil
+        highlightMaskLayer = nil
     }
 
     fileprivate func drawAxes() {
@@ -722,6 +742,17 @@ open class Chart: UIControl {
         UIGraphicsEndImageContext()
     }
 
+    fileprivate func makeLineLayer(with path: CGPath?, color: UIColor) -> CAShapeLayer {
+        let lineLayer = CAShapeLayer()
+        lineLayer.frame = self.bounds
+        lineLayer.path = path
+        lineLayer.strokeColor = color.cgColor
+        lineLayer.fillColor = nil
+        lineLayer.lineWidth = lineWidth
+        lineLayer.lineJoin = CAShapeLayerLineJoin.bevel
+        return lineLayer
+    }
+
     // MARK: - Touch events
 
     fileprivate func drawHighlightLineFromLeftPosition(_ left: CGFloat) {
@@ -751,6 +782,20 @@ open class Chart: UIControl {
         }
     }
 
+    fileprivate func updateHighlightMaskLayout(with offset: CGFloat) {
+        guard let maskLayer = highlightMaskLayer else { return }
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        var rect = bounds
+        rect.size.width = frame.width - offset
+        rect.origin.x = offset
+        maskLayer.frame = rect
+
+        CATransaction.commit()
+    }
+
     func handleTouchEvents(_ touches: Set<UITouch>, event: UIEvent!) {
         let point = touches.first!
         let left = point.location(in: self).x
@@ -765,6 +810,10 @@ open class Chart: UIControl {
             return
         }
 
+        if highlightedChartIndex != nil && hideHighlightOnTouchEnd {
+            drawHighlightingMaskIfNeeded()
+        }
+        updateHighlightMaskLayout(with: left)
         drawHighlightLineFromLeftPosition(left)
 
         if delegate == nil {
@@ -793,10 +842,11 @@ open class Chart: UIControl {
 
     override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         handleTouchEvents(touches, event: event)
-        if self.hideHighlightLineOnTouchEnd {
+        if self.hideHighlightOnTouchEnd {
             if let shapeLayer = highlightShapeLayer {
                 shapeLayer.path = nil
             }
+            removeHighlightingMask()
         }
         delegate?.didEndTouchingChart(self)
     }
