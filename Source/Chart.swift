@@ -570,6 +570,8 @@ open class Chart: UIControl {
         highlightMaskLayer!.backgroundColor = UIColor.black.cgColor
 
         highlightBackLayer = makeLineLayer(with: layerStore[index].path, color: highlightMaskColor)
+        // Without this small correction the chart line behind is slightly visible.
+        highlightBackLayer!.lineWidth = lineWidth + 0.5
         highlightBackLayer!.mask = highlightMaskLayer
 
         layer.addSublayer(highlightBackLayer!)
