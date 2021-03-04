@@ -76,6 +76,8 @@ class BasicChartViewController: UIViewController, ChartDelegate {
             chart.highlightMaskColor = #colorLiteral(red: 0.8784313725, green: 0.8784313725, blue: 0.8784313725, alpha: 1)
             chart.highlightedChartIndex = 4
             chart.hideHighlightOnTouchEnd = true
+            chart.highlightLineWidth = 1
+            chart.highlightLineColor = #colorLiteral(red: 0.3921568627, green: 0.4352941176, blue: 0.4745098039, alpha: 1)
             
         case 2:
             

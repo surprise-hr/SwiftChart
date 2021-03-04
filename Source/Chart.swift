@@ -785,6 +785,8 @@ open class Chart: UIControl {
             shapeLayer.strokeColor = highlightLineColor.cgColor
             shapeLayer.fillColor = nil
             shapeLayer.lineWidth = highlightLineWidth
+            shapeLayer.lineDashPattern = [0.3, 3]
+            shapeLayer.lineCap = .round
 
             highlightShapeLayer = shapeLayer
             layer.addSublayer(shapeLayer)
