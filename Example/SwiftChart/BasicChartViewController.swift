@@ -49,26 +49,32 @@ class BasicChartViewController: UIViewController, ChartDelegate {
             
             let series1 = ChartSeries([0, 6, 2, 7, 3, 10])
             series1.color = #colorLiteral(red: 1, green: 0.8784313725, blue: 0.8980392157, alpha: 1)
+            series1.highlightColor = #colorLiteral(red: 1, green: 0.3529411765, blue: 0.7647058824, alpha: 1)
 
             let series2 = ChartSeries([1, 0, 3, 5, 6, 8])
             series2.color = #colorLiteral(red: 1, green: 0.9647058824, blue: 0.8666666667, alpha: 1)
+            series2.highlightColor = #colorLiteral(red: 1, green: 0.7843137255, blue: 0.1764705882, alpha: 1)
 
             let series3 = ChartSeries([5, 8, 7, 6, 9, 10])
-            series3.color = #colorLiteral(red: 1, green: 0.8980392157, blue: 0.9607843137, alpha: 1)
+            series3.color = #colorLiteral(red: 1, green: 0.8784313725, blue: 0.8980392157, alpha: 1)
+            series3.highlightColor = #colorLiteral(red: 1, green: 0.2352941176, blue: 0.3529411765, alpha: 1)
 
             let series4 = ChartSeries([4, 2, 5, 8, 7, 8])
             series4.color = #colorLiteral(red: 0.9921568627, green: 0.9176470588, blue: 0.8509803922, alpha: 1)
+            series4.highlightColor = #colorLiteral(red: 0.9568627451, green: 0.4941176471, blue: 0.06666666667, alpha: 1)
 
             let series5 = ChartSeries([3, 6, 2, 7, 9, 9])
             series5.color = #colorLiteral(red: 0.937254902, green: 0.8901960784, blue: 0.9803921569, alpha: 1)
+            series5.highlightColor = #colorLiteral(red: 0.6078431373, green: 0.3176470588, blue: 0.8784313725, alpha: 1)
 
             let series6 = ChartSeries([2, 5, 4, 7, 5, 10])
-            series6.color = #colorLiteral(red: 0.07843137255, green: 0.4901960784, blue: 0.9803921569, alpha: 1)
+            series6.color = #colorLiteral(red: 0.8509803922, green: 0.9176470588, blue: 0.9960784314, alpha: 1)
+            series6.highlightColor = #colorLiteral(red: 0.07843137255, green: 0.4901960784, blue: 0.9803921569, alpha: 1)
 
             chart.add([series1, series2, series3, series4, series5, series6])
 
             chart.highlightMaskColor = #colorLiteral(red: 0.8784313725, green: 0.8784313725, blue: 0.8784313725, alpha: 1)
-            chart.highlightedChartIndex = 5
+            chart.highlightedChartIndex = 4
             chart.hideHighlightOnTouchEnd = true
             
         case 2:
@@ -106,8 +112,30 @@ class BasicChartViewController: UIViewController, ChartDelegate {
         chart.lineWidth = 5
         chart.showXLabelsAndGrid = false
         chart.showYLabelsAndGrid = false
+
+        addSwitchButton()
     }
-    
+
+    func addSwitchButton() {
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(switchChart), for: .touchUpInside)
+        button.setTitle("Switch Chart", for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(button)
+        NSLayoutConstraint.activate([
+            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            button.topAnchor.constraint(equalTo: chart.bottomAnchor, constant: 30)
+        ])
+    }
+
+    @objc func switchChart() {
+        if chart.highlightedChartIndex == chart.series.count - 1 {
+            chart.highlightedChartIndex = 0
+        } else {
+            chart.highlightedChartIndex! += 1
+        }
+    }
+
     // Chart delegate
     
     func didTouchChart(_ chart: Chart, indexes: Array<Int?>, x: Double, left: CGFloat) {

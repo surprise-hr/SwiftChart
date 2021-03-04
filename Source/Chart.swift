@@ -511,8 +511,13 @@ open class Chart: UIControl {
             }
         }
 
-        let lineLayer = makeLineLayer(with: path, color: isAboveZeroLine ? series[seriesIndex].colors.above : series[seriesIndex].colors.below)
-
+        let color: UIColor
+        if seriesIndex == highlightedChartIndex {
+            color = isAboveZeroLine ? series[seriesIndex].highlightColors.above : series[seriesIndex].highlightColors.below
+        } else {
+            color = isAboveZeroLine ? series[seriesIndex].colors.above : series[seriesIndex].colors.below
+        }
+        let lineLayer = makeLineLayer(with: path, color: color)
         self.layer.addSublayer(lineLayer)
 
         layerStore.append(lineLayer)
@@ -573,6 +578,9 @@ open class Chart: UIControl {
         // Without this small correction the chart line behind is slightly visible.
         highlightBackLayer!.lineWidth = lineWidth + 0.5
         highlightBackLayer!.mask = highlightMaskLayer
+
+        layerStore[index].zPosition = 1
+        highlightBackLayer!.zPosition = 2
 
         layer.addSublayer(highlightBackLayer!)
     }

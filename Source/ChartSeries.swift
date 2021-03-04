@@ -52,9 +52,27 @@ open class ChartSeries {
     }
 
     /**
+    The series highlight color.
+    */
+    open var highlightColor: UIColor = ChartColors.blueColor() {
+        didSet {
+            highlightColors = (above: highlightColor, below: highlightColor, 0)
+        }
+    }
+
+    /**
     A tuple to specify the color above or below the zero
     */
     open var colors: (
+        above: UIColor,
+        below: UIColor,
+        zeroLevel: Double
+    ) = (above: ChartColors.blueColor(), below: ChartColors.redColor(), 0)
+
+    /**
+    A tuple to specify the highlight color above or below the zero
+    */
+    open var highlightColors: (
         above: UIColor,
         below: UIColor,
         zeroLevel: Double
