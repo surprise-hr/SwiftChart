@@ -149,6 +149,14 @@ open class Chart: UIControl {
     Enable the lines for the labels on the y-axis
     */
     open var showYLabelsAndGrid: Bool = true
+    /**
+    Enable the mid labels on the y-axis
+    */
+    open var showMidYLabel: Bool = false
+    /**
+    Enable the axes lines drawing
+    */
+    open var shouldDrawAxes: Bool = false
 
     /**
     Height of the area at the bottom of the chart, containing the labels for the x-axis.
@@ -380,15 +388,16 @@ open class Chart: UIControl {
         }
 
         drawHighlightingMaskIfNeeded()
-        drawAxes()
 
+        if shouldDrawAxes {
+            drawAxes()
+        }
         if showXLabelsAndGrid && (xLabels != nil || series.count > 0) {
             drawLabelsAndGridOnXAxis()
         }
         if showYLabelsAndGrid && (yLabels != nil || series.count > 0) {
             drawLabelsAndGridOnYAxis()
         }
-
     }
 
     // MARK: - Scaling
@@ -701,12 +710,15 @@ open class Chart: UIControl {
         context.setStrokeColor(gridColor.cgColor)
         context.setLineWidth(0.5)
 
-        var labels: [Double]
+        var labels: [Double] = []
         if yLabels == nil {
-            labels = [(min.y + max.y) / 2, max.y]
             if yLabelsOnRightSide || min.y != 0 {
-                labels.insert(min.y, at: 0)
+                labels.append(min.y)
             }
+            if showMidYLabel {
+                labels.append((min.y + max.y) / 2)
+            }
+            labels.append(max.y)
         } else {
             labels = yLabels!
         }
