@@ -73,6 +73,12 @@ open class Chart: UIControl {
     }
 
     /**
+    Series metadata to display in the highlight info for each point.
+     - NOTE: This array's length must be equal to the longest `data` array's length in the `series` array.
+    */
+    open var seriesMetadata: [String]?
+
+    /**
     The values to display as labels on the x-axis. You can format these values  with the `xLabelFormatter` attribute. 
     As default, it will display the values of the series which has the most data.
     */
@@ -124,6 +130,16 @@ open class Chart: UIControl {
     open var labelFont: UIFont? = UIFont.systemFont(ofSize: 12)
 
     /**
+    Font used for the highlight info label.
+    */
+    open var highlightInfoLabelFont: UIFont = UIFont.systemFont(ofSize: 34, weight: .black)
+
+    /**
+    Font used for the highlight meta info label.
+    */
+    open var highlightMetaInfoLabelFont: UIFont = UIFont.systemFont(ofSize: 12, weight: .heavy)
+
+    /**
     The color used for the labels.
     */
     @IBInspectable
@@ -140,6 +156,18 @@ open class Chart: UIControl {
     */
     @IBInspectable
     open var gridColor: UIColor = UIColor.gray.withAlphaComponent(0.3)
+
+    /**
+    The color used for the highlight info label.
+    */
+    @IBInspectable
+    open var highlightInfoLabelColor: UIColor = UIColor.black
+
+    /**
+    The color used for the highlight meta info label.
+    */
+    @IBInspectable
+    open var highlightMetaInfoLabelColor: UIColor = UIColor.black
 
     /**
     Enable the lines for the labels on the x-axis
@@ -167,6 +195,16 @@ open class Chart: UIControl {
     Height of the area at the top of the chart, acting a padding to make place for the top y-axis label.
     */
     open var topInset: CGFloat = 20
+
+    /**
+    The minimum left inset value to which the info view can be moved.
+    */
+    open var infoLeftInset: CGFloat = 30
+
+    /**
+     The minimum right inset value to which the info view can be moved.
+    */
+    open var infoRightInset: CGFloat = 8
 
     /**
     Width of the chart's lines.
@@ -248,6 +286,8 @@ open class Chart: UIControl {
 
     fileprivate var highlightMaskLayer: CALayer?
     fileprivate var highlightBackLayer: CAShapeLayer?
+    fileprivate var highlightInfoLayer: ResizableTextLayer?
+    fileprivate var highlightMetaInfoLayer: ResizableTextLayer?
 
     fileprivate var highlightShapeLayer: CAShapeLayer!
     fileprivate var layerStore: [CAShapeLayer] = []
@@ -600,6 +640,13 @@ open class Chart: UIControl {
         highlightMaskLayer = nil
     }
 
+    fileprivate func removeHighlightingInfo() {
+        highlightInfoLayer?.removeFromSuperlayer()
+        highlightMetaInfoLayer?.removeFromSuperlayer()
+        highlightInfoLayer = nil
+        highlightMetaInfoLayer = nil
+    }
+
     fileprivate func drawAxes() {
         let context = UIGraphicsGetCurrentContext()!
         context.setStrokeColor(axesColor.cgColor)
@@ -802,8 +849,50 @@ open class Chart: UIControl {
 
             highlightShapeLayer = shapeLayer
             layer.addSublayer(shapeLayer)
-            layerStore.append(shapeLayer)
         }
+    }
+
+    fileprivate func drawHighlightInfo() {
+        let infoLayer = ResizableTextLayer()
+        infoLayer.contentsScale = UIScreen.main.scale
+        infoLayer.font = highlightInfoLabelFont
+        infoLayer.fontSize = highlightInfoLabelFont.pointSize
+        infoLayer.foregroundColor = highlightInfoLabelColor.cgColor
+        infoLayer.zPosition = 3
+        highlightInfoLayer = infoLayer
+        layer.addSublayer(infoLayer)
+
+        let metaInfoLayer = ResizableTextLayer()
+        metaInfoLayer.contentsScale = UIScreen.main.scale
+        metaInfoLayer.font = highlightMetaInfoLabelFont
+        metaInfoLayer.fontSize = highlightMetaInfoLabelFont.pointSize
+        metaInfoLayer.foregroundColor = highlightMetaInfoLabelColor.cgColor
+        metaInfoLayer.zPosition = 3
+        highlightMetaInfoLayer = metaInfoLayer
+        layer.addSublayer(metaInfoLayer)
+    }
+
+    fileprivate func updateHighlightInfoLayout(with offset: CGFloat) {
+        guard let infoLayer = highlightInfoLayer else { return }
+        guard let metaInfoLayer = highlightMetaInfoLayer else { return }
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        var x = Swift.max(infoLeftInset, offset + 8)
+        x = Swift.min(x, bounds.width - infoLayer.frame.width - infoRightInset)
+        infoLayer.frame.origin.x = x
+        infoLayer.string = "\(Int(highlightedValue(at: offset) ?? 0))"
+        infoLayer.sizeToFit()
+
+        var metaX = Swift.max(infoLeftInset, offset + 8)
+        metaX = Swift.min(metaX, bounds.width - metaInfoLayer.frame.width - infoRightInset)
+        metaInfoLayer.frame.origin.x = metaX
+        metaInfoLayer.frame.origin.y = infoLayer.frame.maxY
+        metaInfoLayer.string = highlightedMetaValue(at: offset)
+        metaInfoLayer.sizeToFit()
+
+        CATransaction.commit()
     }
 
     fileprivate func updateHighlightMaskLayout(with offset: CGFloat) {
@@ -836,8 +925,13 @@ open class Chart: UIControl {
 
         if highlightedChartIndex != nil && hideHighlightOnTouchEnd {
             drawHighlightingMaskIfNeeded()
+
+            if highlightInfoLayer == nil {
+                drawHighlightInfo()
+            }
         }
         updateHighlightMaskLayout(with: left)
+        updateHighlightInfoLayout(with: left)
         drawHighlightLineFromLeftPosition(left)
 
         if delegate == nil {
@@ -871,6 +965,7 @@ open class Chart: UIControl {
                 shapeLayer.path = nil
             }
             removeHighlightingMask()
+            removeHighlightingInfo()
         }
         delegate?.didEndTouchingChart(self)
     }
@@ -889,6 +984,24 @@ open class Chart: UIControl {
     fileprivate func valueFromPointAtY(_ y: CGFloat) -> Double {
         let value = ((max.y - min.y) / Double(drawingHeight)) * Double(y) + min.y
         return -value
+    }
+
+    fileprivate func highlightedValue(at x: CGFloat) -> Double? {
+        guard let chartIndex = highlightedChartIndex else { return nil }
+        let chart = series[chartIndex]
+
+        guard x < bounds.width else { return chart.data.last?.y }
+        let divisionLength = bounds.width / CGFloat(chart.data.count)
+        let valueIndex = Int(x / divisionLength)
+        return chart.data[valueIndex].y
+    }
+
+    fileprivate func highlightedMetaValue(at x: CGFloat) -> String? {
+        guard let metadata = seriesMetadata else { return nil }
+        guard x < bounds.width else { return metadata.last }
+        let divisionLength = bounds.width / CGFloat(metadata.count)
+        let index = Int(x / divisionLength)
+        return metadata[index]
     }
 
     fileprivate class func findClosestInValues(

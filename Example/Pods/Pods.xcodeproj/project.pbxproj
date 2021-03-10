@@ -10,6 +10,7 @@
 		0EFE27A8EFE011B8758BD790F5ECA609 /* SwiftChart-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C23DB48901AD3407CD53573F47E2F10 /* SwiftChart-dummy.m */; };
 		373C85B7B6669A0A3705344EDAB91402 /* ChartColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C4E53D35AC018011951EDC658D1DAD /* ChartColors.swift */; };
 		55E394B60B04DDB20FC6394A37896CED /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */; };
+		824A8E6625F81A6A00A8B5D0 /* DynamicTextLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824A8E6525F81A6A00A8B5D0 /* DynamicTextLayer.swift */; };
 		8497FC2CACB05D799553B2A3B68C7527 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */; };
 		9B6B025901B92784B8037B236F392AA3 /* SwiftChart-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 38DEA391E8E15F149E402EBA8F87E0DC /* SwiftChart-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E090F91095BCCEA640DBFFFCB44A10F7 /* Pods-SwiftChart_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = CD650CB35DAED1FE8299D46FA64555C3 /* Pods-SwiftChart_Example-dummy.m */; };
@@ -31,7 +32,7 @@
 
 /* Begin PBXFileReference section */
 		02870D3A7D81C39106976433D66525F9 /* Pods-SwiftChart_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SwiftChart_Example-umbrella.h"; sourceTree = "<group>"; };
-		0386647CB37914AEC8D0A23E3BF2B668 /* SwiftChart.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftChart.framework; path = SwiftChart.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0386647CB37914AEC8D0A23E3BF2B668 /* SwiftChart.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftChart.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06C4E53D35AC018011951EDC658D1DAD /* ChartColors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChartColors.swift; path = Source/ChartColors.swift; sourceTree = "<group>"; };
 		1D9E4DDC7829F1528318FF401FC883EE /* Chart.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Chart.swift; path = Source/Chart.swift; sourceTree = "<group>"; };
 		2688B4672DBD177A7418792391188D9C /* Pods-SwiftChart_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-SwiftChart_Example.modulemap"; sourceTree = "<group>"; };
@@ -41,16 +42,17 @@
 		561A5132A3797E2765AB36B7481F8970 /* SwiftChart.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SwiftChart.modulemap; sourceTree = "<group>"; };
 		568C01271B7B35B625B77BC4EDE5121D /* Pods-SwiftChart_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SwiftChart_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		5C4B8DE0A1B652CE7E1A10CE4B37AE40 /* Pods-SwiftChart_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftChart_Example.release.xcconfig"; sourceTree = "<group>"; };
-		617774A6B1B466ECB401B4948CEA9428 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
-		6425A05A4C1F343D4B8E386AEC5639DF /* SwiftChart.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = SwiftChart.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		7B39E00DEEDA42823413A382DA24AB45 /* Pods_SwiftChart_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_SwiftChart_Example.framework; path = "Pods-SwiftChart_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		617774A6B1B466ECB401B4948CEA9428 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		6425A05A4C1F343D4B8E386AEC5639DF /* SwiftChart.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = SwiftChart.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		7B39E00DEEDA42823413A382DA24AB45 /* Pods_SwiftChart_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftChart_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		824A8E6525F81A6A00A8B5D0 /* DynamicTextLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTextLayer.swift; sourceTree = "<group>"; };
 		8867279583CE6DDCA295BF9B99F3183D /* Pods-SwiftChart_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftChart_Example-frameworks.sh"; sourceTree = "<group>"; };
 		90B67B7AC136B25FEAAA63F793B55A4E /* SwiftChart.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftChart.debug.xcconfig; sourceTree = "<group>"; };
 		92FAAAFF830503A4433CCDF51B3D1CCF /* SwiftChart-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "SwiftChart-Info.plist"; sourceTree = "<group>"; };
 		9A642B0CDA944B2A325A0636A838E989 /* Pods-SwiftChart_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SwiftChart_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		9AA0BDDDB7D98E3EE08604A77194300C /* SwiftChart.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftChart.release.xcconfig; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		C73AE15EFDAD4417B9FBD26FCD4E0D7C /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE.txt; sourceTree = "<group>"; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		C73AE15EFDAD4417B9FBD26FCD4E0D7C /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		CC4F4DE7BC7B65E80DF67F8253B68A24 /* ChartSeries.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChartSeries.swift; path = Source/ChartSeries.swift; sourceTree = "<group>"; };
 		CD650CB35DAED1FE8299D46FA64555C3 /* Pods-SwiftChart_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SwiftChart_Example-dummy.m"; sourceTree = "<group>"; };
 		D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -161,6 +163,7 @@
 				1D9E4DDC7829F1528318FF401FC883EE /* Chart.swift */,
 				06C4E53D35AC018011951EDC658D1DAD /* ChartColors.swift */,
 				CC4F4DE7BC7B65E80DF67F8253B68A24 /* ChartSeries.swift */,
+				824A8E6525F81A6A00A8B5D0 /* DynamicTextLayer.swift */,
 				2F7BC16C7E77B8540EF9AF2F9856D15D /* Pod */,
 				80F2F3C32C174634E3DD111E494A287E /* Support Files */,
 			);
@@ -307,6 +310,7 @@
 			files = (
 				E89F36993229D1B75DDCC7E56FC12B62 /* Chart.swift in Sources */,
 				373C85B7B6669A0A3705344EDAB91402 /* ChartColors.swift in Sources */,
+				824A8E6625F81A6A00A8B5D0 /* DynamicTextLayer.swift in Sources */,
 				F7951E078EEAB8901537CEA3C6C01859 /* ChartSeries.swift in Sources */,
 				0EFE27A8EFE011B8758BD790F5ECA609 /* SwiftChart-dummy.m in Sources */,
 			);
@@ -442,8 +446,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

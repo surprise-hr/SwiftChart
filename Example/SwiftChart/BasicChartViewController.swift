@@ -46,7 +46,8 @@ class BasicChartViewController: UIViewController, ChartDelegate {
         case 1:
             
             // Example with multiple series, the first two with area enabled
-            
+            let metadata = ["Dec 1, 2021", "Dec 2, 2021", "Dec 3, 2021", "Dec 4, 2021", "Dec 5, 2021", "Dec 6, 2021"]
+
             let series1 = ChartSeries([55, 81, 59, 86, 67, 95])
             series1.color = #colorLiteral(red: 1, green: 0.8784313725, blue: 0.8980392157, alpha: 1)
             series1.highlightColor = #colorLiteral(red: 1, green: 0.3529411765, blue: 0.7647058824, alpha: 1)
@@ -72,7 +73,7 @@ class BasicChartViewController: UIViewController, ChartDelegate {
             series6.highlightColor = #colorLiteral(red: 0.07843137255, green: 0.4901960784, blue: 0.9803921569, alpha: 1)
 
             chart.add([series1, series2, series3, series4, series5, series6])
-
+            chart.seriesMetadata = metadata
             chart.highlightMaskColor = #colorLiteral(red: 0.8784313725, green: 0.8784313725, blue: 0.8784313725, alpha: 1)
             chart.highlightedChartIndex = 4
             chart.hideHighlightOnTouchEnd = true
@@ -114,13 +115,12 @@ class BasicChartViewController: UIViewController, ChartDelegate {
         }
 
         chart.lineWidth = 5
-//        chart.minY = 10
-//        chart.maxY = 100
         chart.showXLabelsAndGrid = false
         chart.showYLabelsAndGrid = true
         chart.gridColor = .clear
         chart.labelColor = #colorLiteral(red: 0.3921568627, green: 0.4352941176, blue: 0.4745098039, alpha: 1)
         chart.labelFont = .systemFont(ofSize: 12, weight: .medium)
+        chart.highlightMetaInfoLabelColor = #colorLiteral(red: 0.3921568627, green: 0.4352941176, blue: 0.4745098039, alpha: 1)
 
         addSwitchButton()
     }
