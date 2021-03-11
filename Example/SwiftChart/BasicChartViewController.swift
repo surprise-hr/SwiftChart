@@ -80,14 +80,10 @@ class BasicChartViewController: UIViewController, ChartDelegate {
 
             chart.add([series1, series2, series3, series4, series5, series6])
             chart.seriesMetadata = metadata
-            chart.highlightMaskColor = #colorLiteral(red: 0.8784313725, green: 0.8784313725, blue: 0.8784313725, alpha: 1)
-            chart.highlightedChartIndex = 5
-            chart.hideHighlightOnTouchEnd = true
-            chart.highlightLineWidth = 1
-            chart.highlightLineColor = #colorLiteral(red: 0.3921568627, green: 0.4352941176, blue: 0.4745098039, alpha: 1)
             chart.minY = minValue
             chart.maxY = maxValue
-
+            chart.applyStyle()
+            
         case 2:
             
             // Chart with y-min, y-max and y-labels formatter
@@ -120,14 +116,6 @@ class BasicChartViewController: UIViewController, ChartDelegate {
             
         }
 
-        chart.lineWidth = 5
-        chart.showXLabelsAndGrid = false
-        chart.showYLabelsAndGrid = true
-        chart.gridColor = .clear
-        chart.labelColor = #colorLiteral(red: 0.3921568627, green: 0.4352941176, blue: 0.4745098039, alpha: 1)
-        chart.labelFont = .systemFont(ofSize: 12, weight: .medium)
-        chart.highlightMetaInfoLabelColor = #colorLiteral(red: 0.3921568627, green: 0.4352941176, blue: 0.4745098039, alpha: 1)
-        chart.lineDotImage = UIImage(named: "successIndexPoint")
 
         addSwitchButton()
     }

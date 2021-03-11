@@ -15,6 +15,7 @@
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
+		82C8EC6C25FAA45F00A9AAEC /* Chart+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C8EC6B25FAA45F00A9AAEC /* Chart+Style.swift */; };
 		E8B0D660A46EF06FABD767C8 /* Pods_SwiftChart_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC7CAF090F76E359EA48CF70 /* Pods_SwiftChart_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,7 @@
 		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		82C8EC6B25FAA45F00A9AAEC /* Chart+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chart+Style.swift"; sourceTree = "<group>"; };
 		AC7CAF090F76E359EA48CF70 /* Pods_SwiftChart_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftChart_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9CECD7DA3EB977200516F46 /* Pods-SwiftChart_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftChart_Example.release.xcconfig"; path = "Target Support Files/Pods-SwiftChart_Example/Pods-SwiftChart_Example.release.xcconfig"; sourceTree = "<group>"; };
 		F91CA5016DC91AA3DDBAE123 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				82C8EC6B25FAA45F00A9AAEC /* Chart+Style.swift */,
 			);
 			name = Example;
 			path = SwiftChart;
@@ -240,6 +243,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82C8EC6C25FAA45F00A9AAEC /* Chart+Style.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				2408E4791C1B8F6A00A7B359 /* BasicChartViewController.swift in Sources */,
 				2408E47C1C1B935500A7B359 /* StockChartViewController.swift in Sources */,
