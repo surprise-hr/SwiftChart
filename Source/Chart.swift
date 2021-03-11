@@ -278,6 +278,11 @@ open class Chart: UIControl {
     open var hideHighlightOnTouchEnd = false
 
     /**
+    Image for a dot at the end of the line.
+    */
+    open var lineDotImage: UIImage?
+
+    /**
     Alpha component for the area color.
     */
     open var areaAlphaComponent: CGFloat = 0.1
@@ -288,6 +293,7 @@ open class Chart: UIControl {
     fileprivate var highlightBackLayer: CAShapeLayer?
     fileprivate var highlightInfoLayer: ResizableTextLayer?
     fileprivate var highlightMetaInfoLayer: ResizableTextLayer?
+    fileprivate var lineDotLayer: CALayer?
 
     fileprivate var highlightShapeLayer: CAShapeLayer!
     fileprivate var layerStore: [CAShapeLayer] = []
@@ -566,10 +572,27 @@ open class Chart: UIControl {
         } else {
             color = isAboveZeroLine ? series[seriesIndex].colors.above : series[seriesIndex].colors.below
         }
+
         let lineLayer = makeLineLayer(with: path, color: color)
         self.layer.addSublayer(lineLayer)
-
         layerStore.append(lineLayer)
+
+        if let image = lineDotImage, series[seriesIndex].showDot {
+            let point = CGPoint(x: CGFloat(xValues.last!) - image.size.width + 2,
+                                y: CGFloat(yValues.last!) - image.size.height / 2)
+            drawDot(at: point, image: image)
+        }
+    }
+
+    fileprivate func drawDot(at point: CGPoint, image: UIImage) {
+        lineDotLayer?.removeFromSuperlayer()
+        let imageLayer = CALayer()
+        imageLayer.contents = image.cgImage
+        imageLayer.frame.size = image.size
+        imageLayer.frame.origin = point
+        imageLayer.zPosition = 3
+        layer.addSublayer(imageLayer)
+        lineDotLayer = imageLayer
     }
 
     fileprivate func drawArea(_ xValues: [Double], yValues: [Double], seriesIndex: Int, type: ChartSeries.LineType) {
@@ -858,7 +881,7 @@ open class Chart: UIControl {
         infoLayer.font = highlightInfoLabelFont
         infoLayer.fontSize = highlightInfoLabelFont.pointSize
         infoLayer.foregroundColor = highlightInfoLabelColor.cgColor
-        infoLayer.zPosition = 3
+        infoLayer.zPosition = 4
         highlightInfoLayer = infoLayer
         layer.addSublayer(infoLayer)
 
@@ -867,7 +890,7 @@ open class Chart: UIControl {
         metaInfoLayer.font = highlightMetaInfoLabelFont
         metaInfoLayer.fontSize = highlightMetaInfoLabelFont.pointSize
         metaInfoLayer.foregroundColor = highlightMetaInfoLabelColor.cgColor
-        metaInfoLayer.zPosition = 3
+        metaInfoLayer.zPosition = 4
         highlightMetaInfoLayer = metaInfoLayer
         layer.addSublayer(metaInfoLayer)
     }
