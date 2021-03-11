@@ -902,18 +902,20 @@ open class Chart: UIControl {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
 
+        infoLayer.string = "\(Int(highlightedValue(at: offset) ?? 0))"
+        infoLayer.sizeToFit()
+
         var x = Swift.max(infoLeftInset, offset + 8)
         x = Swift.min(x, bounds.width - infoLayer.frame.width - infoRightInset)
         infoLayer.frame.origin.x = x
-        infoLayer.string = "\(Int(highlightedValue(at: offset) ?? 0))"
-        infoLayer.sizeToFit()
+
+        metaInfoLayer.string = highlightedMetaValue(at: offset)
+        metaInfoLayer.sizeToFit()
 
         var metaX = Swift.max(infoLeftInset, offset + 8)
         metaX = Swift.min(metaX, bounds.width - metaInfoLayer.frame.width - infoRightInset)
         metaInfoLayer.frame.origin.x = metaX
         metaInfoLayer.frame.origin.y = infoLayer.frame.maxY
-        metaInfoLayer.string = highlightedMetaValue(at: offset)
-        metaInfoLayer.sizeToFit()
 
         CATransaction.commit()
     }
