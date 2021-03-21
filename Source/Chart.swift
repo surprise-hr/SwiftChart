@@ -56,6 +56,8 @@ public enum ChartLabelOrientation {
 @IBDesignable
 open class Chart: UIControl {
 
+    static let gestureKey = "ChartGestureRecognizer"
+
     // MARK: Options
 
     @IBInspectable
@@ -328,6 +330,14 @@ open class Chart: UIControl {
     private func commonInit() {
         backgroundColor = UIColor.clear
         contentMode = .redraw // redraw rects on bounds change
+
+        // A long press gesture with that configuration is an alternative
+        // to pan gesture because a pan gesture has a noticable delay.
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        gesture.name = Self.gestureKey
+        gesture.minimumPressDuration = 0
+        gesture.allowableMovement = CGFloat.infinity
+        addGestureRecognizer(gesture)
     }
 
     override open func draw(_ rect: CGRect) {
@@ -934,9 +944,8 @@ open class Chart: UIControl {
         CATransaction.commit()
     }
 
-    func handleTouchEvents(_ touches: Set<UITouch>, event: UIEvent!) {
-        let point = touches.first!
-        let left = point.location(in: self).x
+    func handleTouchEvents(at point: CGPoint) {
+        let left = point.x
         let x = valueFromPointAtX(left)
 
         if left < 0 || left > (drawingWidth as CGFloat) {
@@ -979,24 +988,21 @@ open class Chart: UIControl {
         delegate!.didTouchChart(self, indexes: indexes, x: x, left: left)
     }
 
-    override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouchEvents(touches, event: event)
-    }
-
-    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouchEvents(touches, event: event)
-        if self.hideHighlightOnTouchEnd {
-            if let shapeLayer = highlightShapeLayer {
-                shapeLayer.path = nil
+    @objc private func handlePanGesture(_ sender: UIGestureRecognizer) {
+        handleTouchEvents(at: sender.location(in: self))
+        switch sender.state {
+        case .ended:
+            if self.hideHighlightOnTouchEnd {
+                if let shapeLayer = highlightShapeLayer {
+                    shapeLayer.path = nil
+                }
+                removeHighlightingMask()
+                removeHighlightingInfo()
             }
-            removeHighlightingMask()
-            removeHighlightingInfo()
+            delegate?.didEndTouchingChart(self)
+        default:
+            break
         }
-        delegate?.didEndTouchingChart(self)
-    }
-
-    override open func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouchEvents(touches, event: event)
     }
 
     // MARK: - Utilities
