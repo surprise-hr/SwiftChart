@@ -219,6 +219,8 @@ open class Chart: UIControl {
     */
     weak open var delegate: ChartDelegate?
 
+    public var simultaniousGestures: [UIGestureRecognizer] = []
+
     /**
     Custom minimum value for the x-axis.
     */
@@ -337,6 +339,7 @@ open class Chart: UIControl {
         gesture.name = Self.gestureKey
         gesture.minimumPressDuration = 0
         gesture.allowableMovement = CGFloat.infinity
+        gesture.delegate = self
         addGestureRecognizer(gesture)
     }
 
@@ -1101,6 +1104,13 @@ open class Chart: UIControl {
         let dy1 = level - p1.y
         let dy2 = level - p2.y
         return (x: (p2.x * dy1 - p1.x * dy2) / (dy1 - dy2), y: level)
+    }
+}
+
+extension Chart: UIGestureRecognizerDelegate {
+
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return simultaniousGestures.contains(otherGestureRecognizer)
     }
 }
 
