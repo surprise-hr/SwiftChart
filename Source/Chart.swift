@@ -56,7 +56,7 @@ public enum ChartLabelOrientation {
 @IBDesignable
 open class Chart: UIControl {
 
-    static let gestureKey = "ChartGestureRecognizer"
+    public static let gestureKey = "ChartGestureRecognizer"
 
     // MARK: Options
 
@@ -219,8 +219,6 @@ open class Chart: UIControl {
     */
     weak open var delegate: ChartDelegate?
 
-    public var simultaniousGestures: [UIGestureRecognizer] = []
-
     /**
     Custom minimum value for the x-axis.
     */
@@ -290,6 +288,11 @@ open class Chart: UIControl {
     Alpha component for the area color.
     */
     open var areaAlphaComponent: CGFloat = 0.1
+
+    /**
+     Gesture recognizers that should be allowed to recognize simultaneously with charts gestures.
+     */
+    open var simultaniousGestures: [UIGestureRecognizer] = []
 
     // MARK: Private variables
 
