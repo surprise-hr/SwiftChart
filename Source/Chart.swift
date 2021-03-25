@@ -280,11 +280,6 @@ open class Chart: UIControl {
     open var hideHighlightOnTouchEnd = false
 
     /**
-    Image for a dot at the end of the line.
-    */
-    open var lineDotImage: UIImage?
-
-    /**
     Alpha component for the area color.
     */
     open var areaAlphaComponent: CGFloat = 0.1
@@ -304,6 +299,7 @@ open class Chart: UIControl {
 
     fileprivate var highlightShapeLayer: CAShapeLayer!
     fileprivate var layerStore: [CAShapeLayer] = []
+    fileprivate var curvesSegments: [[CurveSegment]] = []
 
     fileprivate var drawingHeight: CGFloat!
     fileprivate var drawingWidth: CGFloat!
@@ -567,6 +563,8 @@ open class Chart: UIControl {
         let isAboveZeroLine = yValues.max()! <= self.scaleValueOnYAxis(series[seriesIndex].colors.zeroLevel)
         let path = CGMutablePath()
         path.move(to: CGPoint(x: CGFloat(xValues.first!), y: CGFloat(yValues.first!)))
+
+        var segments: [CurveSegment] = []
         for i in 1..<yValues.count {
             switch type {
             case .straight:
@@ -579,8 +577,10 @@ open class Chart: UIControl {
                 let cp1 = CGPoint(x: prevPoint.x + xOffest, y: prevPoint.y)
                 let cp2 = CGPoint(x: currPoint.x - xOffest, y: currPoint.y)
                 path.addCurve(to: currPoint, control1: cp1, control2: cp2)
+                segments.append(CurveSegment(startPoint: prevPoint, cp1: cp1, cp2: cp2, endPoint: currPoint))
             }
         }
+        curvesSegments.append(segments)
 
         let color: UIColor
         if seriesIndex == highlightedChartIndex {
@@ -593,22 +593,32 @@ open class Chart: UIControl {
         self.layer.addSublayer(lineLayer)
         layerStore.append(lineLayer)
 
-        if let image = lineDotImage, series[seriesIndex].showDot {
-            let point = CGPoint(x: CGFloat(xValues.last!) - image.size.width + 2,
-                                y: CGFloat(yValues.last!) - image.size.height / 2)
-            drawDot(at: point, image: image)
+        if seriesIndex == highlightedChartIndex {
+            let point = CGPoint(x: CGFloat(xValues.last!),
+                                y: CGFloat(yValues.last!))
+            drawDot(at: point, with: color)
         }
     }
 
-    fileprivate func drawDot(at point: CGPoint, image: UIImage) {
+    fileprivate func drawDot(at point: CGPoint, with color: UIColor) {
         lineDotLayer?.removeFromSuperlayer()
-        let imageLayer = CALayer()
-        imageLayer.contents = image.cgImage
-        imageLayer.frame.size = image.size
-        imageLayer.frame.origin = point
-        imageLayer.zPosition = 3
-        layer.addSublayer(imageLayer)
-        lineDotLayer = imageLayer
+        let diameter: CGFloat = 20
+        let dotLayer = CALayer()
+        dotLayer.frame.size = CGSize(width: diameter, height: diameter)
+        dotLayer.frame.origin.x = point.x - diameter
+        dotLayer.frame.origin.y = point.y - diameter/2
+        dotLayer.zPosition = 3
+        dotLayer.backgroundColor = color.cgColor
+        dotLayer.cornerRadius = diameter/2
+        dotLayer.borderWidth = 3
+        dotLayer.borderColor = UIColor.white.cgColor
+        dotLayer.shadowPath = UIBezierPath(roundedRect: dotLayer.bounds, cornerRadius: 0).cgPath
+        dotLayer.shadowColor = color.cgColor
+        dotLayer.shadowOpacity = 0.24
+        dotLayer.shadowRadius = 6
+        dotLayer.shadowOffset = CGSize(width: 0, height: 2)
+        layer.addSublayer(dotLayer)
+        lineDotLayer = dotLayer
     }
 
     fileprivate func drawArea(_ xValues: [Double], yValues: [Double], seriesIndex: Int, type: ChartSeries.LineType) {
@@ -863,7 +873,7 @@ open class Chart: UIControl {
 
     // MARK: - Touch events
 
-    fileprivate func drawHighlightLineFromLeftPosition(_ left: CGFloat) {
+    fileprivate func drawHighlightLineFromLeftPosition(with left: CGFloat) {
         if let shapeLayer = highlightShapeLayer {
             // Use line already created
             let path = CGMutablePath()
@@ -950,6 +960,41 @@ open class Chart: UIControl {
         CATransaction.commit()
     }
 
+    fileprivate func updateDotLayout(with offset: CGFloat) {
+        guard let dotLayer = lineDotLayer else { return }
+        guard offset < bounds.width && offset > 0 else { return }
+        guard let index = highlightedChartIndex, curvesSegments.count > index else { return }
+
+        let segments = curvesSegments[index]
+        let segmentWidth = bounds.width / CGFloat(segments.count)
+        let currentSegmentIndex = Int(floor(offset / segmentWidth))
+        let currentSegment = segments[currentSegmentIndex]
+        let t = offset / segmentWidth - CGFloat(currentSegmentIndex)
+        let dotPoint = currentSegment.point(atOffset: t)
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        dotLayer.frame.origin.x = offset - dotLayer.bounds.midX
+        dotLayer.frame.origin.y = dotPoint.y - dotLayer.bounds.midY
+
+        CATransaction.commit()
+    }
+
+    fileprivate func moveDotToEndPosition() {
+        guard let dotLayer = lineDotLayer else { return }
+        guard let index = highlightedChartIndex, curvesSegments.count > index else { return }
+        let segments = curvesSegments[index]
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        dotLayer.frame.origin.x = segments.last!.endPoint.x - dotLayer.bounds.maxX
+        dotLayer.frame.origin.y = segments.last!.endPoint.y - dotLayer.bounds.midY
+
+        CATransaction.commit()
+    }
+
     func handleTouchEvents(at point: CGPoint) {
         let left = point.x
         let x = valueFromPointAtX(left)
@@ -972,7 +1017,8 @@ open class Chart: UIControl {
         }
         updateHighlightMaskLayout(with: left)
         updateHighlightInfoLayout(with: left)
-        drawHighlightLineFromLeftPosition(left)
+        updateDotLayout(with: left)
+        drawHighlightLineFromLeftPosition(with: left)
 
         if delegate == nil {
             return
@@ -1002,6 +1048,7 @@ open class Chart: UIControl {
                 if let shapeLayer = highlightShapeLayer {
                     shapeLayer.path = nil
                 }
+                moveDotToEndPosition()
                 removeHighlightingMask()
                 removeHighlightingInfo()
             }

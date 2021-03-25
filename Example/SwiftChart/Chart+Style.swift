@@ -24,6 +24,5 @@ extension Chart {
         labelColor = #colorLiteral(red: 0.3921568627, green: 0.4352941176, blue: 0.4745098039, alpha: 1)
         labelFont = .systemFont(ofSize: 12, weight: .medium)
         highlightMetaInfoLabelColor = #colorLiteral(red: 0.3921568627, green: 0.4352941176, blue: 0.4745098039, alpha: 1)
-        lineDotImage = UIImage(named: "successIndexPoint")
     }
 }

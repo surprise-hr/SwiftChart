@@ -76,7 +76,6 @@ class BasicChartViewController: UIViewController, ChartDelegate {
             let series6 = ChartSeries(series6Data)
             series6.color = #colorLiteral(red: 0.8509803922, green: 0.9176470588, blue: 0.9960784314, alpha: 1)
             series6.highlightColor = #colorLiteral(red: 0.07843137255, green: 0.4901960784, blue: 0.9803921569, alpha: 1)
-            series6.showDot = true
 
             chart.add([series1, series2, series3, series4, series5, series6])
             chart.seriesMetadata = metadata

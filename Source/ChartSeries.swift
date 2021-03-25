@@ -38,11 +38,6 @@ open class ChartSeries {
     open var area: Bool = false
 
     /**
-    Shows a dot at the end of the line.
-    */
-    open var showDot: Bool = false
-
-    /**
     The line drawing option.
     */
     open var lineType: LineType = .curve
